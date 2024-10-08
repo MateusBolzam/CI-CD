@@ -3,31 +3,41 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # O fluxo de trabalho é acionado quando há um push para a branch "main".
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # O trabalho será executado em uma máquina virtual com Ubuntu.
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  # Esta etapa faz o checkout do código do repositório.
+        uses: actions/checkout@v2
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.12'  # Define a versão do Python a ser usada.
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt  # Instala as dependências listadas no requirements.txt.
-          pip install flake8  # Instala flake8 para linting.
-          pip install pytest  # Instala pytest para testes.
+          pip install -r requirements.txt
+          pip install pytest
 
       - name: Run tests
-        run: pytest  # Executa os testes automatizados usando pytest.
+        run: pytest
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Build and Deploy with Docker
         run: |
-          docker-compose up --build -d  
-        # Constrói e inicia os serviços definidos no docker-compose.yml.
+          docker-compose up --build -d
