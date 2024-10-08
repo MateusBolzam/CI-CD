@@ -3,27 +3,31 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - main  # O fluxo de trabalho é acionado quando há um push para a branch "main".
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-latest  # O trabalho será executado em uma máquina virtual com Ubuntu.
+
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2  # Esta etapa faz o checkout do código do repositório.
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.12'
+          python-version: '3.12'  # Define a versão do Python a ser usada.
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt  # Instala as dependências listadas no requirements.txt.
+          pip install flake8  # Instala flake8 para linting.
+          pip install pytest  # Instala pytest para testes.
 
       - name: Run tests
+        run: pytest  # Executa os testes automatizados usando pytest.
+
+      - name: Build and Deploy with Docker
         run: |
-          pip install pytest
-          pytest
+          docker-compose up --build -d  
+        # Constrói e inicia os serviços definidos no docker-compose.yml.
