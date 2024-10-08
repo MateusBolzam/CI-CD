@@ -24,13 +24,17 @@ jobs:
           pip install flake8
           pip install pytest
 
+      - name: Run flake8
+        run: flake8 app.py
+
       - name: Run tests
         run: pytest
 
       - name: Remove conflicting packages
         run: |
-          sudo apt-get remove -y containerd
+          sudo apt-get remove -y containerd containerd.io
           sudo apt-get autoremove -y
+          sudo apt-get clean
 
       - name: Install Docker
         run: |
